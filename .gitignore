@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+CLAUDE.md
+GUIDA_STUDIO.md

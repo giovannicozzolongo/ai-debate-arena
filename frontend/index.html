@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DebateArena — AI vs AI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">&#9876;</span>
+                <h1>Debate<span class="accent">Arena</span></h1>
+            </div>
+            <p class="tagline">Two AI agents. One topic. Who wins?</p>
+        </header>
+
+        <!-- topic input -->
+        <section class="input-section">
+            <div class="input-row">
+                <input
+                    type="text"
+                    id="topic-input"
+                    placeholder="Enter a debate topic — e.g. &quot;Remote work is better than office work&quot;"
+                    autocomplete="off"
+                >
+                <button id="start-btn" onclick="startDebate()">Start Debate</button>
+            </div>
+            <div class="settings-row">
+                <div class="setting">
+                    <label for="rounds-select">Rounds</label>
+                    <select id="rounds-select">
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+                <div class="setting">
+                    <label for="provider-select">Model</label>
+                    <select id="provider-select" onchange="toggleApiKey()">
+                        <option value="groq">Llama 3.3 70B (Groq — free)</option>
+                        <option value="anthropic">Claude Sonnet (API key)</option>
+                        <option value="openai">GPT-4o mini (API key)</option>
+                    </select>
+                </div>
+                <div class="setting api-key-setting" id="api-key-group" style="display:none;">
+                    <label for="api-key-input">API Key</label>
+                    <input type="password" id="api-key-input" placeholder="sk-...">
+                </div>
+            </div>
+        </section>
+
+        <!-- status -->
+        <div class="status-bar" id="status-bar" style="display:none;">
+            <div class="status-dot"></div>
+            <span id="status-text">Starting debate...</span>
+        </div>
+
+        <!-- debate arena -->
+        <section class="arena" id="arena" style="display:none;">
+            <div class="debater-col pro-col">
+                <div class="debater-header">
+                    <span class="debater-badge pro-badge">PRO</span>
+                    <span class="debater-label">In Favor</span>
+                </div>
+                <div class="arguments" id="pro-arguments"></div>
+            </div>
+
+            <div class="vs-divider">
+                <span>VS</span>
+            </div>
+
+            <div class="debater-col con-col">
+                <div class="debater-header">
+                    <span class="debater-badge con-badge">CON</span>
+                    <span class="debater-label">Against</span>
+                </div>
+                <div class="arguments" id="con-arguments"></div>
+            </div>
+        </section>
+
+        <!-- judge verdict -->
+        <section class="verdict-section" id="verdict-section" style="display:none;">
+            <div class="verdict-header">
+                <span class="verdict-icon">&#9878;</span>
+                <h2>Judge's Verdict</h2>
+            </div>
+            <div class="verdict-content" id="verdict-content"></div>
+        </section>
+
+        <!-- footer -->
+        <footer class="footer">
+            <p>Built with FastAPI + Groq &middot; Multi-agent AI debate system</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
