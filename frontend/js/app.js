@@ -57,9 +57,7 @@ async function startDebate() {
     }
 
     const provider = $("#provider-select").value;
-    const roundsRaw = parseInt($("#rounds-input").value) || 3;
-    const numRounds = Math.max(1, Math.min(10, roundsRaw));
-    $("#rounds-input").value = numRounds;
+    const numRounds = 3;
     const apiKey = $("#api-key-input").value.trim() || null;
 
     if (provider !== "groq" && !apiKey) {
