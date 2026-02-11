@@ -24,6 +24,22 @@ def _topic_allowed(topic: str) -> bool:
     return not BLOCKED_PATTERNS.search(topic)
 
 
+TOPIC_CHECK_PROMPT = """You are a topic validator. The user will give you a debate topic.
+Reply with ONLY "yes" or "no".
+Reply "yes" if the topic is a clear, debatable statement or question that two people could reasonably argue for and against.
+Reply "no" if the topic is:
+- Random characters, gibberish, or a single meaningless word
+- A proper noun without context (just a name, a brand, etc.)
+- Too vague to form arguments about
+- Not a statement or question that can be debated"""
+
+
+async def _validate_topic(provider, topic: str) -> bool:
+    messages = [{"role": "user", "content": f'Is this a valid debate topic? "{topic}"'}]
+    result = await provider.generate(TOPIC_CHECK_PROMPT, messages, temperature=0.0)
+    return result.strip().lower().startswith("yes")
+
+
 def _get_provider(name: str, byok: str | None):
     providers = {
         "groq": (GroqProvider, GROQ_API_KEY),
@@ -51,6 +67,15 @@ async def _run_debate(req: DebateRequest):
     except ValueError as e:
         yield {"data": DebateEvent(type="error", content=str(e)).model_dump_json()}
         return
+
+    # validate topic with LLM
+    try:
+        valid = await _validate_topic(provider, req.topic)
+        if not valid:
+            yield {"data": DebateEvent(type="error", content="This doesn't look like a debatable topic. Try a clear statement or question, e.g. \"Social media does more harm than good\".").model_dump_json()}
+            return
+    except Exception:
+        pass  # if validation fails, let the debate proceed
 
     pro = Debater("pro", provider)
     con = Debater("con", provider)
