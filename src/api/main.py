@@ -24,17 +24,22 @@ def _topic_allowed(topic: str) -> bool:
     return not BLOCKED_PATTERNS.search(topic)
 
 
-TOPIC_CHECK_PROMPT = """You are a topic validator. The user will give you a debate topic.
-Reply with ONLY "yes" or "no".
-Reply "yes" if the topic is a clear, debatable statement or question that two people could reasonably argue for and against.
-Reply "no" if the topic is:
-- Random characters, gibberish, or a single meaningless word
-- A proper noun without context (just a name, a brand, etc.)
-- Too vague to form arguments about
-- Not a statement or question that can be debated"""
+TOPIC_CHECK_PROMPT = """You are a strict topic validator. The user will give you a debate topic.
+Reply with ONLY "yes" or "no". Nothing else.
+Reply "yes" ONLY if the topic is a clear, complete, debatable statement or question in a real language.
+Reply "no" if ANY of these apply:
+- It is not a real word or phrase in any language
+- It is random characters, a typo, or gibberish (e.g. "ewed", "asdf", "ggino")
+- It is just a single word without a clear debatable position
+- It is a name or noun without context
+- It is too short or vague to have two sides
+- You have to GUESS what the user meant
+When in doubt, reply "no"."""
 
 
 async def _validate_topic(provider, topic: str) -> bool:
+    if len(topic.strip()) < 5:
+        return False
     messages = [{"role": "user", "content": f'Is this a valid debate topic? "{topic}"'}]
     result = await provider.generate(TOPIC_CHECK_PROMPT, messages, temperature=0.0)
     return result.strip().lower().startswith("yes")
