@@ -133,6 +133,22 @@ body {
     cursor: not-allowed;
 }
 
+.topic-examples {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+}
+
+.example {
+    color: var(--accent);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.example:hover {
+    opacity: 0.7;
+}
+
 .settings-row {
     display: flex;
     gap: 1.5rem;
@@ -290,14 +306,6 @@ body {
     letter-spacing: 0.08em;
     color: var(--text-dim);
     margin-bottom: 0.5rem;
-}
-
-.argument-placeholder {
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    font-style: italic;
-    padding: 1.5rem;
-    text-align: center;
 }
 
 @keyframes fadeIn {

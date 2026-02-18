@@ -25,11 +25,16 @@
                 <input
                     type="text"
                     id="topic-input"
-                    placeholder="Enter a debate topic, e.g. &quot;Remote work is better than office work&quot;"
+                    placeholder="Enter a debate topic..."
                     autocomplete="off"
                 >
                 <button id="start-btn" onclick="startDebate()">Start Debate</button>
             </div>
+            <p class="topic-examples">
+                Try: <span class="example" onclick="fillTopic(this)">"Remote work is better than office work"</span>
+                &middot; <span class="example" onclick="fillTopic(this)">"University is worth the cost"</span>
+                &middot; <span class="example" onclick="fillTopic(this)">"AI will replace most jobs"</span>
+            </p>
             <div class="settings-row">
                 <div class="setting">
                     <label for="provider-select">Model</label>
@@ -52,16 +57,14 @@
             <span id="status-text">Starting debate...</span>
         </div>
 
-        <!-- debate arena -->
-        <section class="arena" id="arena">
+        <!-- debate arena (hidden until debate starts) -->
+        <section class="arena" id="arena" style="display:none;">
             <div class="debater-col pro-col">
                 <div class="debater-header">
                     <span class="debater-badge pro-badge">PRO</span>
                     <span class="debater-label">In Favor</span>
                 </div>
-                <div class="arguments" id="pro-arguments">
-                    <div class="argument-placeholder">Waiting for topic...</div>
-                </div>
+                <div class="arguments" id="pro-arguments"></div>
             </div>
 
             <div class="vs-divider">
@@ -73,21 +76,17 @@
                     <span class="debater-badge con-badge">CON</span>
                     <span class="debater-label">Against</span>
                 </div>
-                <div class="arguments" id="con-arguments">
-                    <div class="argument-placeholder">Waiting for topic...</div>
-                </div>
+                <div class="arguments" id="con-arguments"></div>
             </div>
         </section>
 
-        <!-- judge verdict -->
-        <section class="verdict-section" id="verdict-section">
+        <!-- judge verdict (hidden until debate ends) -->
+        <section class="verdict-section" id="verdict-section" style="display:none;">
             <div class="verdict-header">
                 <span class="verdict-icon">&#9878;</span>
                 <h2>Judge's Verdict</h2>
             </div>
-            <div class="verdict-content" id="verdict-content">
-                <p class="argument-placeholder">The judge will evaluate after all rounds are complete.</p>
-            </div>
+            <div class="verdict-content" id="verdict-content"></div>
         </section>
 
         <!-- footer -->

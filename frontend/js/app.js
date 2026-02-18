@@ -5,6 +5,12 @@ function toggleApiKey() {
     $("#api-key-group").style.display = provider === "groq" ? "none" : "flex";
 }
 
+function fillTopic(el) {
+    const text = el.textContent.replace(/^"|"$/g, "");
+    $("#topic-input").value = text;
+    $("#topic-input").focus();
+}
+
 function setStatus(text, show = true) {
     $("#status-text").textContent = text;
     $("#status-bar").style.display = show ? "flex" : "none";
@@ -17,7 +23,6 @@ function addArgumentCard(side, round) {
     card.id = `${side}-round-${round}`;
     card.innerHTML = `<div class="argument-round">Round ${round}</div><span class="arg-text"></span>`;
     container.appendChild(card);
-    // auto-scroll the panel to the new card
     container.scrollTop = container.scrollHeight;
 }
 
@@ -68,7 +73,9 @@ async function startDebate() {
     // reset
     $("#pro-arguments").innerHTML = "";
     $("#con-arguments").innerHTML = "";
-    $("#verdict-content").innerHTML = '<p class="argument-placeholder">The judge will evaluate after all rounds are complete.</p>';
+    $("#verdict-content").innerHTML = "";
+    $("#verdict-section").style.display = "none";
+    $("#arena").style.display = "none";
     $("#start-btn").disabled = true;
     setStatus("Validating topic...");
 
@@ -104,6 +111,7 @@ async function startDebate() {
 
                 switch (ev.type) {
                     case "round_start":
+                        $("#arena").style.display = "grid";
                         setStatus(`Round ${ev.round}, PRO is arguing...`);
                         break;
 
