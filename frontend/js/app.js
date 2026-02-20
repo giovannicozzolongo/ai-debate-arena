@@ -76,6 +76,7 @@ async function startDebate() {
     $("#verdict-content").innerHTML = "";
     $("#verdict-section").style.display = "none";
     $("#arena").style.display = "none";
+    $("#how-it-works").style.display = "none";
     $("#start-btn").disabled = true;
     setStatus("Validating topic...");
 
@@ -112,7 +113,7 @@ async function startDebate() {
                 switch (ev.type) {
                     case "round_start":
                         $("#arena").style.display = "grid";
-                        setStatus(`Round ${ev.round}, PRO is arguing...`);
+                        setStatus(`Round ${ev.round}/3: PRO is arguing...`);
                         break;
 
                     case "pro_chunk":
@@ -121,7 +122,7 @@ async function startDebate() {
 
                     case "con_chunk":
                         if (!$(`#con-round-${ev.round}`)) {
-                            setStatus(`Round ${ev.round}, CON is responding...`);
+                            setStatus(`Round ${ev.round}/3: CON is responding...`);
                         }
                         appendChunk("con", ev.round, ev.content);
                         break;
@@ -129,16 +130,21 @@ async function startDebate() {
                     case "round_end":
                         finishCard("pro", ev.round);
                         finishCard("con", ev.round);
-                        setStatus(`Round ${ev.round} complete`);
+                        if (ev.round < 3) {
+                            setStatus(`Round ${ev.round}/3 complete. Next round starting...`);
+                        } else {
+                            setStatus("All rounds complete. Judge is evaluating...");
+                        }
                         break;
 
                     case "judge":
-                        setStatus("Judge is evaluating...");
+                        setStatus("Judge has reached a verdict.");
                         renderVerdict(ev.content);
                         break;
 
                     case "error":
                         setStatus(`Error: ${ev.content}`);
+                        $("#how-it-works").style.display = "flex";
                         $("#start-btn").disabled = false;
                         return;
 
@@ -150,6 +156,7 @@ async function startDebate() {
         }
     } catch (err) {
         setStatus(`Connection error: ${err.message}`);
+        $("#how-it-works").style.display = "flex";
     }
 
     $("#start-btn").disabled = false;
