@@ -1,23 +1,23 @@
-const $ = (sel) => document.querySelector(sel);
+// shorthand
+const el = s => document.querySelector(s);
 
 function toggleApiKey() {
-    const provider = $("#provider-select").value;
-    $("#api-key-group").style.display = provider === "groq" ? "none" : "flex";
+    const provider = el("#provider-select").value;
+    el("#api-key-group").style.display = provider === "groq" ? "none" : "flex";
 }
 
-function fillTopic(el) {
-    const text = el.textContent.replace(/^"|"$/g, "");
-    $("#topic-input").value = text;
-    $("#topic-input").focus();
+function fillTopic(btn) {
+    el("#topic-input").value = btn.textContent;
+    el("#topic-input").focus();
 }
 
 function setStatus(text, show = true) {
-    $("#status-text").textContent = text;
-    $("#status-bar").style.display = show ? "flex" : "none";
+    el("#status-text").textContent = text;
+    el("#status-bar").style.display = show ? "flex" : "none";
 }
 
 function addArgumentCard(side, round) {
-    const container = $(`#${side}-arguments`);
+    const container = el(`#${side}-arguments`);
     const card = document.createElement("div");
     card.className = "argument-card typing-cursor";
     card.id = `${side}-round-${round}`;
@@ -27,19 +27,16 @@ function addArgumentCard(side, round) {
 }
 
 function appendChunk(side, round, text) {
-    if (!$(`#${side}-round-${round}`)) {
-        addArgumentCard(side, round);
-    }
-    const span = $(`#${side}-round-${round} .arg-text`);
+    if (!el(`#${side}-round-${round}`)) addArgumentCard(side, round);
+    const span = el(`#${side}-round-${round} .arg-text`);
     if (span) {
         span.textContent += text;
-        const container = $(`#${side}-arguments`);
-        container.scrollTop = container.scrollHeight;
+        el(`#${side}-arguments`).scrollTop = el(`#${side}-arguments`).scrollHeight;
     }
 }
 
 function finishCard(side, round) {
-    const card = $(`#${side}-round-${round}`);
+    const card = el(`#${side}-round-${round}`);
     if (card) card.classList.remove("typing-cursor");
 }
 
@@ -49,38 +46,34 @@ function renderVerdict(markdown) {
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
         .replace(/\n\n/g, "</p><p>")
         .replace(/\n/g, "<br>");
-    $("#verdict-content").innerHTML = "<p>" + html + "</p>";
-    $("#verdict-section").style.display = "block";
-    $("#verdict-section").scrollIntoView({ behavior: "smooth" });
+    el("#verdict-content").innerHTML = "<p>" + html + "</p>";
+    el("#verdict-section").style.display = "block";
+    el("#verdict-section").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 async function startDebate() {
-    const topic = $("#topic-input").value.trim();
-    if (!topic) {
-        $("#topic-input").focus();
-        return;
-    }
+    const topic = el("#topic-input").value.trim();
+    if (!topic) { el("#topic-input").focus(); return; }
 
-    const provider = $("#provider-select").value;
-    const numRounds = 3;
-    const apiKey = $("#api-key-input").value.trim() || null;
+    const provider = el("#provider-select").value;
+    const apiKey = el("#api-key-input").value.trim() || null;
 
     if (provider !== "groq" && !apiKey) {
         alert("Please enter your API key for this provider.");
         return;
     }
 
-    // reset
-    $("#pro-arguments").innerHTML = "";
-    $("#con-arguments").innerHTML = "";
-    $("#verdict-content").innerHTML = "";
-    $("#verdict-section").style.display = "none";
-    $("#arena").style.display = "none";
-    $("#how-it-works").style.display = "none";
-    $("#start-btn").disabled = true;
+    // reset ui
+    el("#pro-arguments").innerHTML = "";
+    el("#con-arguments").innerHTML = "";
+    el("#verdict-content").innerHTML = "";
+    el("#verdict-section").style.display = "none";
+    el("#arena").style.display = "none";
+    el("#how-it-works").style.display = "none";
+    el("#start-btn").disabled = true;
     setStatus("Validating topic...");
 
-    const body = { topic, num_rounds: numRounds, provider };
+    const body = { topic, num_rounds: 3, provider };
     if (apiKey) body.api_key = apiKey;
 
     try {
@@ -112,42 +105,33 @@ async function startDebate() {
 
                 switch (ev.type) {
                     case "round_start":
-                        $("#arena").style.display = "grid";
-                        setStatus(`Round ${ev.round}/3: PRO is arguing...`);
+                        el("#arena").style.display = "grid";
+                        setStatus(`Round ${ev.round}/3 - PRO is arguing...`);
                         break;
-
                     case "pro_chunk":
                         appendChunk("pro", ev.round, ev.content);
                         break;
-
                     case "con_chunk":
-                        if (!$(`#con-round-${ev.round}`)) {
-                            setStatus(`Round ${ev.round}/3: CON is responding...`);
-                        }
+                        if (!el(`#con-round-${ev.round}`))
+                            setStatus(`Round ${ev.round}/3 - CON is responding...`);
                         appendChunk("con", ev.round, ev.content);
                         break;
-
                     case "round_end":
                         finishCard("pro", ev.round);
                         finishCard("con", ev.round);
-                        if (ev.round < 3) {
-                            setStatus(`Round ${ev.round}/3 complete. Next round starting...`);
-                        } else {
-                            setStatus("All rounds complete. Judge is evaluating...");
-                        }
+                        setStatus(ev.round < 3
+                            ? `Round ${ev.round}/3 complete. Next round starting...`
+                            : "All rounds done. Judge is evaluating...");
                         break;
-
                     case "judge":
-                        setStatus("Judge has reached a verdict.");
+                        setStatus("The judge has reached a verdict.");
                         renderVerdict(ev.content);
                         break;
-
                     case "error":
                         setStatus(`Error: ${ev.content}`);
-                        $("#how-it-works").style.display = "flex";
-                        $("#start-btn").disabled = false;
+                        el("#how-it-works").style.display = "block";
+                        el("#start-btn").disabled = false;
                         return;
-
                     case "done":
                         setStatus("", false);
                         break;
@@ -156,15 +140,15 @@ async function startDebate() {
         }
     } catch (err) {
         setStatus(`Connection error: ${err.message}`);
-        $("#how-it-works").style.display = "flex";
+        el("#how-it-works").style.display = "block";
     }
 
-    $("#start-btn").disabled = false;
+    el("#start-btn").disabled = false;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    $("#topic-input").focus();
-    $("#topic-input").addEventListener("keydown", (e) => {
+    el("#topic-input").focus();
+    el("#topic-input").addEventListener("keydown", e => {
         if (e.key === "Enter") startDebate();
     });
 });

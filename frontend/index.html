@@ -7,108 +7,84 @@
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app">
-        <!-- header -->
         <header class="header">
-            <div class="logo">
-                <a href="/" class="title-link"><h1><span class="accent">Debate</span> Arena</h1></a>
-            </div>
-            <p class="tagline">Two AI agents. One topic. Who wins?</p>
+            <a href="/" class="logo-link">
+                <h1 class="logo">Debate<span class="logo-dot">.</span> Arena</h1>
+            </a>
+            <p class="tagline">Two minds, one question. Watch AI agents argue it out.</p>
         </header>
 
-        <!-- topic input -->
         <section class="input-section">
             <div class="input-row">
                 <input
                     type="text"
                     id="topic-input"
-                    placeholder="Enter a debate topic..."
+                    placeholder="What should they debate?"
                     autocomplete="off"
                 >
-                <button id="start-btn" onclick="startDebate()">Start Debate</button>
+                <button id="start-btn" onclick="startDebate()">Go</button>
             </div>
-            <p class="topic-examples">
-                Try: <span class="example" onclick="fillTopic(this)">"Remote work is better than office work"</span>
-                &middot; <span class="example" onclick="fillTopic(this)">"University is worth the cost"</span>
-                &middot; <span class="example" onclick="fillTopic(this)">"AI will replace most jobs"</span>
-            </p>
+            <div class="suggestions">
+                <span class="suggestion-label">Try:</span>
+                <button class="suggestion" onclick="fillTopic(this)">Remote work is better than office work</button>
+                <button class="suggestion" onclick="fillTopic(this)">University is worth the cost</button>
+                <button class="suggestion" onclick="fillTopic(this)">AI will replace most jobs</button>
+            </div>
             <div class="settings-row">
                 <div class="setting">
                     <label for="provider-select">Model</label>
                     <select id="provider-select" onchange="toggleApiKey()">
-                        <option value="groq">Llama 3.3 70B (Groq, free)</option>
-                        <option value="anthropic">Claude Sonnet (API key)</option>
-                        <option value="openai">GPT-4o mini (API key)</option>
+                        <option value="groq">Llama 3.3 70B (free)</option>
+                        <option value="anthropic">Claude Sonnet (bring your key)</option>
+                        <option value="openai">GPT-4o mini (bring your key)</option>
                     </select>
                 </div>
-                <div class="setting api-key-setting" id="api-key-group" style="display:none;">
+                <div class="setting" id="api-key-group" style="display:none;">
                     <label for="api-key-input">API Key</label>
                     <input type="password" id="api-key-input" placeholder="sk-...">
                 </div>
             </div>
         </section>
 
-        <!-- how it works -->
-        <section class="how-it-works" id="how-it-works">
-            <div class="step">
-                <span class="step-num">1</span>
-                <span class="step-text">Two AI agents debate your topic for 3 rounds</span>
-            </div>
-            <div class="step">
-                <span class="step-num">2</span>
-                <span class="step-text">They respond to each other's arguments in real time</span>
-            </div>
-            <div class="step">
-                <span class="step-num">3</span>
-                <span class="step-text">A third AI judges who won and gives a score</span>
-            </div>
-        </section>
+        <p class="how-caption" id="how-it-works">Three rounds of back-and-forth, then a third agent judges who won.</p>
 
-        <!-- status -->
         <div class="status-bar" id="status-bar" style="display:none;">
-            <div class="status-dot"></div>
+            <div class="status-pulse"></div>
             <span id="status-text">Starting debate...</span>
         </div>
 
-        <!-- debate arena (hidden until debate starts) -->
         <section class="arena" id="arena" style="display:none;">
             <div class="debater-col pro-col">
-                <div class="debater-header">
-                    <span class="debater-badge pro-badge">PRO</span>
-                    <span class="debater-label">In Favor</span>
+                <div class="col-header">
+                    <span class="col-label pro-label">For</span>
                 </div>
                 <div class="arguments" id="pro-arguments"></div>
             </div>
 
-            <div class="vs-divider">
-                <span>VS</span>
-            </div>
+            <div class="arena-divider"></div>
 
             <div class="debater-col con-col">
-                <div class="debater-header">
-                    <span class="debater-badge con-badge">CON</span>
-                    <span class="debater-label">Against</span>
+                <div class="col-header">
+                    <span class="col-label con-label">Against</span>
                 </div>
                 <div class="arguments" id="con-arguments"></div>
             </div>
         </section>
 
-        <!-- judge verdict (hidden until debate ends) -->
         <section class="verdict-section" id="verdict-section" style="display:none;">
+            <div class="verdict-bar"></div>
             <div class="verdict-header">
-                <span class="verdict-icon">&#9878;</span>
-                <h2>Judge's Verdict</h2>
+                <h2>The Verdict</h2>
             </div>
             <div class="verdict-content" id="verdict-content"></div>
         </section>
 
-        <!-- footer -->
-        <footer class="footer">
-            <p>Debate Arena / Multi-agent AI debate system / FastAPI + LLM</p>
-        </footer>
+        <footer class="footer">Giovanni Cozzolongo</footer>
     </div>
 
     <script src="/static/js/app.js"></script>
